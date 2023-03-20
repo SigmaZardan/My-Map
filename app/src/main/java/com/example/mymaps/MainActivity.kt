@@ -1,11 +1,16 @@
 package com.example.mymaps
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.models.Place
 import com.example.mymaps.models.UserMap
+
+private const val TAG = "MainActivity"
+const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rvMaps: RecyclerView
@@ -24,7 +29,18 @@ class MainActivity : AppCompatActivity() {
         val userMaps = generateSampleData()
 
         // set the adapter on the recycler view
-        rvMaps.adapter = MapsAdapter(this@MainActivity, userMaps)
+        rvMaps.adapter =
+            MapsAdapter(this@MainActivity, userMaps, object : MapsAdapter.OnClickListener {
+                override fun onItemClick(position: Int) {
+                    Log.i(TAG, "onItemClicked $position")
+                    // When the user taps on the view in RV, navigate to new activity
+                    val intent = Intent(this@MainActivity, DisplayMapsActivity::class.java)
+                    //passing the data as serialized
+                    // passing the current position data from the userMaps list
+                    intent.putExtra(EXTRA_USER_MAP, userMaps[position])
+                    startActivity(intent)
+                }
+            })
 
     }
 
