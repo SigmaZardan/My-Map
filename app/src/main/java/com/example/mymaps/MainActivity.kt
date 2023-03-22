@@ -1,25 +1,34 @@
 package com.example.mymaps
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.models.Place
 import com.example.mymaps.models.UserMap
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 private const val TAG = "MainActivity"
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
+const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rvMaps: RecyclerView
+    private lateinit var fabCreateMap: FloatingActionButton
+    private lateinit var getResult: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // find the id for rvMaps:
-        rvMaps = findViewById(R.id.rvMap)
+        // initialize rvMaps
+        rvMaps = findViewById(R.id.rvMaps)
+        // initialize fabCreateMap
+        fabCreateMap = findViewById(R.id.fabCreateMap)
 
         // set the layout manager on the recycler view
         rvMaps.layoutManager =
@@ -34,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onItemClick(position: Int) {
                     Log.i(TAG, "onItemClicked $position")
                     // When the user taps on the view in RV, navigate to new activity
-                    val intent = Intent(this@MainActivity, DisplayMapsActivity::class.java)
+                    val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
                     //passing the data as serialized
                     // passing the current position data from the userMaps list
                     intent.putExtra(EXTRA_USER_MAP, userMaps[position])
@@ -42,8 +51,25 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-    }
+        // receiver
+         getResult = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ){
+            if(it.resultCode == Activity.RESULT_OK) {
+                    //get new map data from the data object
+                //val data = it.data?.getParcelableExtra()
+            }
+        }
 
+        // handle click for floating action button
+        fabCreateMap.setOnClickListener {
+            Log.i(TAG, " Floating Button Clicked!")
+            val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
+            // getting the data back from the CreateMapActivity
+            intent.putExtra(EXTRA_MAP_TITLE,"New Map Title")
+            getResult.launch(intent)
+        }
+    }
     private fun generateSampleData(): List<UserMap> {
         return listOf(
             UserMap(

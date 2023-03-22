@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 
 private const val TAG = "DisplayMapsActivity"
 
-class DisplayMapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class DisplayMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityDisplayMapsBinding
@@ -35,6 +35,8 @@ class DisplayMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // getting the data from the intent :
         userMap = intent.parcelable<UserMap>(EXTRA_USER_MAP) as UserMap
 
+        // set the title :
+        supportActionBar?.title = userMap.title
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
